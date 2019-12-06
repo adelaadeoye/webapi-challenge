@@ -28,7 +28,18 @@ router.get("/", (req, res) => {
 });
 
 // post project
+router.post("/postProject", (req, res) => {
+  projectDB
+    .insert(req.body)
+    .then(success => {
+      res.status(201).json(success);
+    })
+    .catch(error => {
+      return res.status(500).json({ error: error.message });
+    });
+});
 
+//Delete project
 
 router.delete("/deleteProject/:id", async (req, res) => {
     const  projectID = req.params.id;
@@ -38,7 +49,7 @@ router.delete("/deleteProject/:id", async (req, res) => {
       if (!action) {
         return res
           .status(400)
-          .json({ message: "invalid project ID or projrct does not exist" });
+          .json({ message: "invalid project ID or project does not exist" });
       } else {
         projectDB.remove(req.params.id).then(success => {
           res.status(200).json({message:"Project deleted successfully"});
@@ -48,6 +59,7 @@ router.delete("/deleteProject/:id", async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
   });
+
 
 
 //custom Middleware
