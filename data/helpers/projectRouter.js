@@ -45,8 +45,8 @@ router.delete("/deleteProject/:id", async (req, res) => {
     const  projectID = req.params.id;
     try {
 
-      const action = await projectDB.get(projectID);
-      if (!action) {
+      const project = await projectDB.get(projectID);
+      if (!project) {
         return res
           .status(400)
           .json({ message: "invalid project ID or project does not exist" });
@@ -60,16 +60,33 @@ router.delete("/deleteProject/:id", async (req, res) => {
     }
   });
 
+  //update project
+  router.put("/updateProject/:id", validateProjectID, (req, res) => {
 
+    projectDB.update(req.params.id,req.body)
+    .then(success=>{
+        res.status(201).json({message:"project updated successfully ", success})
+    })
+    .catch(error=>{
+        res.send(error)
+    })
+  
+  });
 
 //custom Middleware
 
-function logger(req, res, next) {
-  console.log(
-    `${req.method} to ${req.originalUrl} at [${new Date().toISOString()}]`
-  );
-
-  next();
-}
+function validateProjectID(req, res, next) {
+    // do your magic!
+    const projectID = req.params.id;
+  
+    projectDB.get().then(project => {
+      const result = project.find(({ id }) => id == projectID);
+      if (result) {
+        next();
+      } else {
+        res.status(400).json({ message: "invalid project id" });
+      }
+    });
+  }
 
 module.exports = router;
