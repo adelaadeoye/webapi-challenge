@@ -18,26 +18,44 @@ router.get('/',(req,res)=>{
 
 //create action
 
-router.post("/postAction",validateWithPostId,(req,res)=>{
-actionDB.insert(req.body)
-.then(success=>{
-    res.status(201).json(success)
-})
-.catch()
-})
-//custom Middleware
-function validateWithPostId(req,res,next){
-    const postID = req.body.project_id;
+router.post("/postAction",async (req,res)=>{
+    const {project_id}=req.body;
+    try{
+        const project= await projectDB.get(project_id);
+        if(!project){
+        return res.status(400).json({ message: "invalid product ID or product does not exist" });
+             }
+        else{
+            actionDB.insert(req.body)
+            .then(success=>{
+                res.status(201).json(success)
+            })
+        }
 
-    projectDB.get().then(users => {
-      const result = users.find(({ id }) => id == postID);
-      if (result) {
-        next();
-      } else {
-        res.status(400).json({ message: "invalid product ID or product does not exist" });
-      }
-    });
-    next();
-}
+
+
+    }
+    catch(error){
+        return res
+        .status(500)
+        .json({ error: error.message });    }
+
+    }
+)
+//custom Middleware
+// function validateWithPostId(req,res,next){
+//     const postID = req.body.project_id;
+
+//     projectDB.get().then(users => {
+//       const result = users.find(({ id }) => id == postID);
+//       if (result) {
+//         next();
+//       } else {
+//         res.status(400).json({ message: "invalid product ID or product does not exist" });
+//       }
+//     });
+//     next();
+// }
 
 module.exports = router;
+
