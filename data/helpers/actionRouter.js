@@ -37,18 +37,6 @@ router.post("/postAction", async (req, res) => {
 
 //Delete action
 
-// router.delete("/deleteAction/:id",  (req, res) => {
-//   actionDB
-//     .remove(req.params.id)
-//     .then(deleteSuccess => {
-//       res
-//         .status(200)
-//         .json({ message: "Item deleted successfully", deleteSuccess });
-//     })
-//     .catch(error => {
-//       res.status(500).json({ error: error.message });
-//     });
-// });
 router.delete("/deleteAction/:id", async (req, res) => {
     const  actionId = req.params.id;
     try {
@@ -67,19 +55,27 @@ router.delete("/deleteAction/:id", async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
   });
-//custom Middleware
-function validateAcionID(req, res, next) {
-  const actionId = req.params.id;
 
-  actionDB.get().then(users => {
-    const result = users.find(({ id }) => id == actionId);
-    if (result) {
-      next();
-    } else {
-      res.status(400).json({ message: "invalid  ID or action does not exist" });
+  //Update action 
+  
+  router.put("/updateAction/:id", async (req, res) => {
+    const { actionID } = req.params.id;
+    try {
+      const action = await actionDB.get(actionID);
+      if (!action) {
+        return res
+          .status(400)
+          .json({ message: "invalid action ID or action does not exist" });
+      } else {
+        actionDB.update(req.params.id,req.body).then(success => {
+          res.status(201).json(success);
+        });
+      }
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
   });
-  next();
-}
+//custom Middleware
+
 
 module.exports = router;
