@@ -15,6 +15,18 @@ router.get("/", (req, res) => {
     });
 });
 
+//get  action by ID and also all actions if no id is provided 
+router.get("/:id", (req, res) => {
+    actionDB
+      .get(req.params.id)
+      .then(actions => {
+        res.status(200).json(actions);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  });
+
 //create action
 
 router.post("/postAction", async (req, res) => {

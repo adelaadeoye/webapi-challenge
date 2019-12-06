@@ -4,7 +4,19 @@ const projectDB = require("./projectModel");
 const router = express.Router();
 
 
-//get all projects
+//get project actions
+router.get('/:id',(req,res)=>{
+
+    projectDB.getProjectActions(req.params.id)
+    .then(actions=>{
+        res.status(200).json(actions)
+    })
+    .catch(error=>{
+        console.log(error)
+    })
+})
+// get all project
+
 router.get('/',(req,res)=>{
 
     projectDB.get()
@@ -15,7 +27,6 @@ router.get('/',(req,res)=>{
         console.log(error)
     })
 })
-
 
 // post project
 
