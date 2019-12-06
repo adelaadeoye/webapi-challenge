@@ -28,16 +28,27 @@ router.get("/", (req, res) => {
 });
 
 // post project
-router.post("/postProject",  (req, res) => {
-  projectDB
-    .insert(req.body)
-    .then(success => {
-      res.status(201).json(success);
-    })
-    .catch(error => {
+
+
+router.delete("/deleteProject/:id", async (req, res) => {
+    const  projectID = req.params.id;
+    try {
+
+      const action = await projectDB.get(projectID);
+      if (!action) {
+        return res
+          .status(400)
+          .json({ message: "invalid project ID or projrct does not exist" });
+      } else {
+        projectDB.remove(req.params.id).then(success => {
+          res.status(200).json({message:"Project deleted successfully"});
+        });
+      }
+    } catch (error) {
       return res.status(500).json({ error: error.message });
-    });
-});
+    }
+  });
+
 
 //custom Middleware
 
